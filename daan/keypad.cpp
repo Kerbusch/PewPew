@@ -3,7 +3,7 @@
 class KeypadController{
 private:
     hwlib::keypad<16>& keypad1;
-    
+
 public:
     KeypadController(hwlib::keypad<16>& keypad1_):
         keypad1(keypad1_)
@@ -20,6 +20,27 @@ public:
 
     char getc(){
         return keypad1.getc();
+    }
+
+    int get_int(){
+        int n = 0;
+        bool loop = true;
+        while(loop){
+            auto c = keypad1.getc();
+            if(c != 'A' && c != 'B' && c != 'C' && c != 'D'){
+                if(c == '*'){
+                    n = 0;
+                    hwlib::cout << "input: " << "\n";
+                }else if(c == '#'){
+                    loop = false;
+                }else{
+                    n *= 10;
+                    n += c - '0';
+                    hwlib::cout << "input: " << n << "\n";
+                }
+            }
+        }
+        return n;
     }
 };
 
@@ -47,11 +68,18 @@ int main( void ){
 
     KeypadController pad = {keypad1};
 
-    while(true){
-        if(pad.check_input('A')){
-            hwlib::cout << "-true\n";
-        }else{
-            hwlib::cout << "-false\n";
-        }
+    int gun_number = 0;
+    int tijd = 0, countdown = 0;
+
+    hwlib::cout << "Give gun number: \n";
+    gun_number = pad.get_int();
+    if(gun_number == 0){
+        hwlib::cout << "Give tijd: \n";
+        tijd = pad.get_int();
+        hwlib::cout << "Give countdown: \n";
+        countdown = pad.get_int();
     }
+    hwlib::cout << "gun_number" << gun_number << "\n";
+    hwlib::cout << "tijd" << tijd << "\n";
+    hwlib::cout << "countdown" << countdown << "\n";
 }
