@@ -1,0 +1,79 @@
+\hypertarget{classTrigger}{}\doxysection{Trigger Class Reference}
+\label{classTrigger}\index{Trigger@{Trigger}}
+
+
+\mbox{\hyperlink{classTrigger}{Trigger}} Class.  
+
+
+
+
+{\ttfamily \#include $<$trigger.\+hpp$>$}
+
+
+
+Inheritance diagram for Trigger\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTrigger_a52d8a279d87f67fe91ebddbb27c8f7a1}{Trigger}} (hwlib\+::pin\+\_\+out \&led\+\_\+, hwlib\+::pin\+\_\+in \&sw\+\_\+, \mbox{\hyperlink{classSpeakerControl}{Speaker\+Control}} \&speaker\+Control\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor of the \mbox{\hyperlink{classTrigger}{Trigger}} class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTrigger_a6367201fda29734eea9d4eeeae758ea8}\label{classTrigger_a6367201fda29734eea9d4eeeae758ea8}} 
+void \mbox{\hyperlink{classTrigger_a6367201fda29734eea9d4eeeae758ea8}{main}} ()
+\begin{DoxyCompactList}\small\item\em main funtion for the rtos\+::task$<$$>$. Wil run on rtos\+::run(); \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTrigger_a5080a95c3d3b53f1b85a6dd78dbebac1}\label{classTrigger_a5080a95c3d3b53f1b85a6dd78dbebac1}} 
+hwlib\+::pin\+\_\+direct\+\_\+from\+\_\+out\+\_\+t \mbox{\hyperlink{classTrigger_a5080a95c3d3b53f1b85a6dd78dbebac1}{led}}
+\begin{DoxyCompactList}\small\item\em gpio pin for the led \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classTrigger_a47c06c3c71be9554c8edc14d356f8edd}\label{classTrigger_a47c06c3c71be9554c8edc14d356f8edd}} 
+hwlib\+::pin\+\_\+direct\+\_\+from\+\_\+in\+\_\+t \mbox{\hyperlink{classTrigger_a47c06c3c71be9554c8edc14d356f8edd}{sw}}
+\begin{DoxyCompactList}\small\item\em gpio pin for the switch/trigger \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classTrigger_a983037a89b9c3f1bd4733e7832d46c70}\label{classTrigger_a983037a89b9c3f1bd4733e7832d46c70}} 
+\mbox{\hyperlink{classSpeakerControl}{Speaker\+Control}} \& \mbox{\hyperlink{classTrigger_a983037a89b9c3f1bd4733e7832d46c70}{speaker\+Control}}
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classSpeakerControl}{Speaker\+Control}} member for enabling the play sound flags. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classTrigger_aab422078d94b873abca3668de85be5b6}\label{classTrigger_aab422078d94b873abca3668de85be5b6}} 
+long long int \mbox{\hyperlink{classTrigger_aab422078d94b873abca3668de85be5b6}{delay}}
+\begin{DoxyCompactList}\small\item\em delay for timer \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classTrigger_abbb12445e3866b8e499126189aaf323e}\label{classTrigger_abbb12445e3866b8e499126189aaf323e}} 
+rtos\+::timer \mbox{\hyperlink{classTrigger_abbb12445e3866b8e499126189aaf323e}{trigger\+\_\+timer}}
+\begin{DoxyCompactList}\small\item\em rtos\+::timer for periodical checking of input \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classTrigger_a8ae45f8b7dcf3e6e6e0d5695d7d43e2b}\label{classTrigger_a8ae45f8b7dcf3e6e6e0d5695d7d43e2b}} 
+rtos\+::flag \mbox{\hyperlink{classTrigger_a8ae45f8b7dcf3e6e6e0d5695d7d43e2b}{trigger\+\_\+pressed\+\_\+flag}}
+\begin{DoxyCompactList}\small\item\em N\+OT R\+I\+G\+HT N\+E\+E\+DS TO BE C\+H\+A\+N\+G\+ED. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\mbox{\hyperlink{classTrigger}{Trigger}} Class. 
+
+... 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classTrigger_a52d8a279d87f67fe91ebddbb27c8f7a1}\label{classTrigger_a52d8a279d87f67fe91ebddbb27c8f7a1}} 
+\index{Trigger@{Trigger}!Trigger@{Trigger}}
+\index{Trigger@{Trigger}!Trigger@{Trigger}}
+\doxysubsubsection{\texorpdfstring{Trigger()}{Trigger()}}
+{\footnotesize\ttfamily Trigger\+::\+Trigger (\begin{DoxyParamCaption}\item[{hwlib\+::pin\+\_\+out \&}]{led\+\_\+,  }\item[{hwlib\+::pin\+\_\+in \&}]{sw\+\_\+,  }\item[{\mbox{\hyperlink{classSpeakerControl}{Speaker\+Control}} \&}]{speaker\+Control\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor of the \mbox{\hyperlink{classTrigger}{Trigger}} class. 
+
+This constructor sets the pins and speaker\+Control as members. 
+\begin{DoxyParams}{Parameters}
+{\em led\+\_\+} & This is a hwlib\+::pin\+\_\+out\& for the led of trigger. \\
+\hline
+{\em sw\+\_\+} & This is a hwlib\+::pin\+\_\+in\& for the switch of the trigger. \\
+\hline
+{\em speaker\+Control\+\_\+} & This is a \mbox{\hyperlink{classSpeakerControl}{Speaker\+Control}} for setting flags. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+trigger.\+hpp\end{DoxyCompactItemize}

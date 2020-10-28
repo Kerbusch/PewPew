@@ -1,0 +1,70 @@
+\hypertarget{classir__send}{}\doxysection{ir\+\_\+send Class Reference}
+\label{classir__send}\index{ir\_send@{ir\_send}}
+
+
+Inheritance diagram for ir\+\_\+send\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classir__send_a63e8e974a57c278307cd95a3b2edd73b}\label{classir__send_a63e8e974a57c278307cd95a3b2edd73b}} 
+{\bfseries ir\+\_\+send} (hwlib\+::pin\+\_\+out \&led\+\_\+, rtos\+::mutex \&mutex\+\_\+)
+\item 
+\mbox{\Hypertarget{classir__send_a5c176eef3c7c081c2e7849fc41f01fb8}\label{classir__send_a5c176eef3c7c081c2e7849fc41f01fb8}} 
+void {\bfseries add} (uint16\+\_\+t x)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classir__send_a3faa8aa0ada8f895eee60f52217b2817}\label{classir__send_a3faa8aa0ada8f895eee60f52217b2817}} 
+enum {\bfseries state\+\_\+t} \{ {\bfseries idle}, 
+{\bfseries running}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classir__send_a381163d317b1081ec976a57d8a3ee59b}\label{classir__send_a381163d317b1081ec976a57d8a3ee59b}} 
+void {\bfseries send\+\_\+bit} (bool x)
+\item 
+\mbox{\Hypertarget{classir__send_abd27c18956860a33edc4786f222c3fe5}\label{classir__send_abd27c18956860a33edc4786f222c3fe5}} 
+void {\bfseries main} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classir__send_a272f70c75f4a874faef6f85d4d7fbb3a}\label{classir__send_a272f70c75f4a874faef6f85d4d7fbb3a}} 
+state\+\_\+t {\bfseries state} = idle
+\item 
+\mbox{\Hypertarget{classir__send_a08cceef0c562169ea1d0d6828350bc40}\label{classir__send_a08cceef0c562169ea1d0d6828350bc40}} 
+hwlib\+::pin\+\_\+direct\+\_\+from\+\_\+out\+\_\+t {\bfseries led}
+\item 
+\mbox{\Hypertarget{classir__send_a2087043cb8bcbd92a948c4cce2113205}\label{classir__send_a2087043cb8bcbd92a948c4cce2113205}} 
+rtos\+::mutex \& {\bfseries mutex}
+\item 
+\mbox{\Hypertarget{classir__send_a6cd4ecfbb93880e0b6c0b92cd9932c8a}\label{classir__send_a6cd4ecfbb93880e0b6c0b92cd9932c8a}} 
+rtos\+::timer {\bfseries send\+\_\+timer\+\_\+long} = \{this, \char`\"{}send\+\_\+timer\+\_\+long\char`\"{}\}
+\item 
+\mbox{\Hypertarget{classir__send_ab8b477e835966006f1d57bc1ca8dd522}\label{classir__send_ab8b477e835966006f1d57bc1ca8dd522}} 
+long long int {\bfseries delay\+\_\+long} = 1600 $\ast$ rtos\+::us
+\item 
+\mbox{\Hypertarget{classir__send_aa75826b8d938a6205c85925e776a9ad1}\label{classir__send_aa75826b8d938a6205c85925e776a9ad1}} 
+rtos\+::timer {\bfseries send\+\_\+timer\+\_\+short} = \{this, \char`\"{}send\+\_\+timer\+\_\+short\char`\"{}\}
+\item 
+\mbox{\Hypertarget{classir__send_aa945be19483517f8d9fa3acb5bf883bd}\label{classir__send_aa945be19483517f8d9fa3acb5bf883bd}} 
+long long int {\bfseries delay\+\_\+short} = 800 $\ast$ rtos\+::us
+\item 
+\mbox{\Hypertarget{classir__send_af343b89d5c6ea41ab8c220dd3c9e5c97}\label{classir__send_af343b89d5c6ea41ab8c220dd3c9e5c97}} 
+rtos\+::timer {\bfseries send\+\_\+timer\+\_\+3ms} = \{this, \char`\"{}send\+\_\+timer\+\_\+3ms\char`\"{}\}
+\item 
+\mbox{\Hypertarget{classir__send_a6f2147d15dca7ddd0d52c9244db890c6}\label{classir__send_a6f2147d15dca7ddd0d52c9244db890c6}} 
+long long int {\bfseries delay\+\_\+3ms} = 3 $\ast$ rtos\+::ms
+\item 
+\mbox{\Hypertarget{classir__send_a7d2a0db977fa76cd96c685e38d5e85af}\label{classir__send_a7d2a0db977fa76cd96c685e38d5e85af}} 
+rtos\+::channel$<$ uint16\+\_\+t, 1024 $>$ {\bfseries send\+\_\+unit16\+\_\+t\+\_\+channel}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ir.\+hpp\end{DoxyCompactItemize}
