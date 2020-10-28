@@ -4,20 +4,7 @@
 #include "speaker.hpp"
 #include "ir.hpp"
 #include "trigger.hpp"
-
-//def data types
-//#define tijd_countdown 2;
-
-struct tijd_countdown{
-    int tijd;
-    int countdown;
-};
-
-struct gun_data{
-    int number;
-    int power;
-    int health;
-};
+#include "struct.hpp"
 
 /*class Speaker{
 private:
@@ -68,7 +55,7 @@ int main( void ){
     //ir code
     ir_send s = {ir,m1};
     message_writing m = {s};
-    runner r = {m, 500 * rtos::ms};
+    //runner r = {m, 500 * rtos::ms};
 
     //speaker gpio
     auto speaker_pin = hwlib::target::pin_out( hwlib::target::pins::d7 );
