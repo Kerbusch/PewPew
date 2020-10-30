@@ -5,7 +5,6 @@
 #ifndef TRIGGER_STRUCT_HPP
 #define TRIGGER_STRUCT_HPP
 
-//moet in eigen hpp
 struct tijd_countdown{
     int tijd;
     int countdown = 60;
@@ -19,7 +18,7 @@ struct gun_data{
 
 struct hit{
     int from;
-    int demage;
+    int damage;
 };
 
 struct game_parameters_stuct{

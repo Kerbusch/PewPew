@@ -1,13 +1,8 @@
-//
-// Created by daan on 28-10-20.
-//
-
 #ifndef SPEAKER_HPP
 #define SPEAKER_HPP
 
 #include "hwlib.hpp"
 #include "rtos.hpp"
-
 
 class SpeakerControl: public rtos::task<> {
 private:
@@ -73,6 +68,14 @@ private:
 
     void peew(){
         beep(20'000, 200'000, 990 );
+    }
+
+    void beep3(){
+        for( int i = 0; i < 3; i++ ){
+            beep( 1'000, 50'000 );
+            beep_timer.set(20'000 * rtos::us);
+            wait(beep_timer);
+        }
     }
 
 public:
