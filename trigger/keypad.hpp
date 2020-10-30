@@ -41,8 +41,6 @@ public:
     char getc(){
         return keypad1.getc();
     }
-
-
 };
 
 class DisplayControl{
@@ -73,14 +71,6 @@ public:
         oled.flush();
     }
 };
-
-// a = player number
-// b = power
-// c = tijd
-// d =
-
-
-// health is standaart 100
 
 class init_game{
 private:

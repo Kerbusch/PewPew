@@ -2,46 +2,120 @@
 #include "rtos.hpp"
 
 #include "speaker.hpp"
+#include "run_game.hpp"
 #include "ir.hpp"
 #include "trigger.hpp"
 #include "struct.hpp"
 
-/*class Speaker{
+class clock : public rtos::task<>{
 private:
-    hwlib::pin_direct_from_out_t pin;
-public:
-    Speaker(hwlib::pin_out& pin_):
-            pin(pin_)
-    {}
+    enum state_t {
+        idle,
+        counting
+    };
+    state_t state = idle;
 
-    void await( long long unsigned int t ){
-        while( t > hwlib::now_us() ){}
-    }
+    //reference
+    run_game& runGame;
 
-    void beep( int f, int d, int fd = 1000 ){
-        auto t = hwlib::now_us();
-        auto end = t + d;
-        while( end > hwlib::now_us() ){
-            auto p = 500'000 / f;
-            f = f * fd / 1000;
-            pin.write( 1 );
-            pin.flush();
-            await( t += p );
-            pin.write( 0 );
-            pin.flush();
-            await( t += p );
+    int timer = 0;
+
+    //rtos members
+    rtos::flag start_clock_flag = {this, "start_clock_flag"};
+    long long int delay = 1000 * rtos::ms;
+    rtos::timer clock_timer = {this, "clock_timer"};
+
+    void main(){
+        switch (state) {
+            case idle: {
+                //entry
+                //transistion
+                wait(start_clock_flag);
+                state = counting;
+                break;
+            }case counting: {
+                //entry
+                count();
+                runGame.enable_clock_done();
+                //transistion
+                state = idle;
+                break;
+            }
         }
     }
-};*/
 
-class ir_recieve{
-private:
-    hwlib::pin_direct_from_in_t signal;
+    void count(){
+        while (timer > 0){
+            clock_timer.set(delay);
+            wait(clock_timer);
+            timer--;
+        }
+    }
 
 public:
-    ir_recieve(hwlib::pin_in& signal_):
-        signal(signal_)
+    clock(run_game& runGame_):
+        runGame(runGame_)
     {}
+
+    void set_timer(const int& x){
+        timer = x;
+    }
+
+    void enable_start_clock_flag(){
+        start_clock_flag.set();
+    }
+};
+
+class DisplayControl{
+private:
+    //oled
+    hwlib::glcd_oled& oled;
+    //window
+    hwlib::window& w1;
+    hwlib::window& w2;
+    //font
+    hwlib::font_default_8x8 f1;
+    //terminal
+    hwlib::terminal_from d1;
+    hwlib::terminal_from d2;
+
+public:
+    DisplayControl(hwlib::glcd_oled& oled_, hwlib::window& w1_, hwlib::window& w2_):
+            oled(oled_),
+            w1(w1_),
+            w2(w2_),
+            d1(w1,f1),
+            d2(w2,f1)
+    {}
+
+    void SetDisplayMessage(){
+        if(receive_hit == true){
+            d2  << "\f" << "HIT! - " /*damage_score()*/ << "health";
+                << hwlib::flush;
+                hwlib::wait_ms(1000);
+
+        }else if (gamesettings_receive == true){
+            d2  << "\f" << "Setting received!";
+                << hwlib::flush;
+                hwlib::wait_ms(1000);
+        }else{
+            d2 << "\f"
+                << hwlib::flush;
+        }
+    }
+    /*SetDisplayMessage() //d2
+    SetDisplayGameStatus(health, time) // d1
+    SetShowInvoer() //d2
+
+    //----------------------------
+
+    stats
+    //----------------------------
+    invoer / message
+    hit()
+
+    //----------------------------
+    */
 };
 
 //run_game
@@ -71,16 +145,15 @@ int main( void ){
     Trigger trigger = {led_yellow,sw0,speakerControl};
 
     //OLED
-    /*auto scl = hwlib::target::pin_oc( hwlib::target::pins::scl );
+    auto scl = hwlib::target::pin_oc( hwlib::target::pins::scl );
     auto sda = hwlib::target::pin_oc( hwlib::target::pins::sda );
 
     auto i2c_bus = hwlib::i2c_bus_bit_banged_scl_sda( scl, sda );
 
     auto oled = hwlib::glcd_oled( i2c_bus, 0x3c );
 
-    auto w = hwlib::part(oled,hwlib::xy( 0, 0 ),hwlib::xy( 128, 64));
-    auto f1 = hwlib::font_default_8x8();
-    auto d1 = hwlib::terminal_from( w, f1 );*/
+    auto w1 = hwlib::part(oled,hwlib::xy( 0, 0 ),hwlib::xy( 128, 32));
+    auto w2 = hwlib::part(oled,hwlib::xy( 0, 33 ),hwlib::xy( 128, 64));
     //END_OLED
 
     //START CODE

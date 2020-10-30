@@ -2,17 +2,12 @@
 #define IR_HPP
 
 #include "struct.hpp"
+#include "run_game.hpp"
 #include <vector>
 
 //def data types
 const int TIJD_AND_COUNTDOWN = 2;
 const int HIT_DEMAGE = 3;
-
-//temp class
-class run_game{
-public:
-gun_data gun_data1 = {1,10,100};
-};
 
 class ir_send : public rtos::task<>{
 private:
@@ -217,6 +212,7 @@ public:
 
 class message_translation : public rtos::task<>{
 private:
+    /// @brief enum state_t for the different states of the class
     enum state_t{
         idle,
         for_me,
@@ -225,19 +221,25 @@ private:
         report_hit
 
     };
+
+    /// @brief state of the class
     state_t state = idle;
 
     //members:
+    /// @brief run_game
     run_game& runGame;
-    //start game
+    /// @brief startgaem
+    start_game& startGame;
 
-    int number = -1;
-
+    /// @brief vector<uint16_t> of the input
     std::vector<uint16_t> input_all = {};
 
     //rtos members:
+    /// @brief rtos::channel with the received bytes
     rtos::channel<uint16_t , 1024> receive_bytes_channel;
 
+    /// @brief main funtion for rtos
+    /// @details state switch for the different states
     void main(){
         while (true){
             switch (state) {
@@ -302,25 +304,33 @@ public:
     //              1-11111-10000-xor
     //              1-11111-00010-xor
     //              1-11111-11010-xor
-    message_translation(run_game& runGame_):
+    /// @brief Constructor of the message_translation class.
+    /// @details This constructor sets the run_game and start_game classes as members.
+    /// @param runGame_ This is a run_game class.
+    /// @param startGame_ This is a start_game class.
+    message_translation(run_game& runGame_, start_game& startGame_):
         runGame(runGame_),
+        startGame(startGame_),
         receive_bytes_channel(this, "receive_bytes_channel")
     {}
 
+    /// @brief Extracts the half word (16bits)
+    /// @details This funtion gets the first 16 bits of the channel and puts them in the vector input_all.
+    /// @see input_all.
     void extract_half_word_to_vector(){
         uint16_t x = receive_bytes_channel.read();
         //check complete;
         input_all.push_back(x);
     }
 
+    /// @brief Checks if the 16 bits are complete
+    /// @details Gets the values in the function. The function make the xor of the number and data part and compares it to the xor of the message.
     bool check_complete(uint16_t input){
-        //1 start bit
-        //5 number (to) bits
-        //5 data bits
-        //55 xor bits
-        return input;
+        return ((extract_for(input) ^ extract_data(input)) == extract_xor(input));
     }
 
+    /// @brief Extracts the data part of the 16 bits
+    /// @details Gets bit 6 - 10 of the input.
     uint8_t extract_data(uint16_t input){
         //get data
         uint16_t mask = 0x3E0; // 00000011 11100000
@@ -329,35 +339,58 @@ public:
         return input;
     }
 
-    bool check_for_me(uint16_t input){
-        //if number = gun_data.number of 31
+    /// @brief Extracts the for part of the 16 bits
+    /// @details Gets bit 1 - 5 of the input.
+    uint8_t extract_for(uint16_t input){
+        //get data
         uint16_t mask = 0x7C00; // 01111100 00000000
         input &= mask;
         input = input >> 10;
+        return input;
+    }
+
+    /// @brief Extracts the xor part of the 16 bits
+    /// @details Gets bit 1 - 15 of the input.
+    uint8_t extract_xor(uint16_t input){
+        //get xor
+        uint16_t mask = 0x1F; // 00000000 00011111
+        input &= mask;
+        return input;
+    }
+
+    /// @brief Checks if the is for this player
+    /// @details Checks if the for part of the input if for this player or for everyone (31).
+    bool check_for_me(uint16_t input){
+        input = extract_for(input);
         if(input == 31 || input == runGame.gun_data1.number){
             return true;
         }return false;
     }
 
-    int get_data_type(uint16_t input){
+    /*int get_data_type(uint16_t input){
         //get data first or 2nd half word for type
         uint16_t mask = 0x3E0; // 00000011 11100000
         input &= mask;
         input = input >> 5;
         return input;
-    }
+    }*/
 
+    /// @brief Checks if 2 16bits are double
     bool check_double(const uint16_t& input1, const uint16_t& input2){
         return input1 == input2;
     }
 
+    /// @brief x
+    /// @details v
     hit get_hit(){ // data type == 3
-        uint8_t from = extract_data(input_all[2]);
-        uint8_t demage = extract_data(input_all[3]);
+        uint8_t f = extract_data(input_all[2]);
+        uint8_t d = extract_data(input_all[3]);
         clean();
-        return hit{from,demage}; //Naar channel!!!! <-----------------------------------------------
+        return hit{f,d};                            //Naar channel!!!! <-----------------------------------------------
     }
 
+    /// @brief x
+    /// @details v
     tijd_countdown get_tijd_countdown(){
         uint16_t t, c;
         t = extract_data(input_all[2]);
@@ -367,11 +400,19 @@ public:
         c = c << 5;
         c |= extract_data(input_all[5]);
         clean();
-        return tijd_countdown{t,c}; //Naar channel!!!! <-----------------------------------------------
+        return tijd_countdown{t,c};                 //Naar channel!!!! <-----------------------------------------------
     }
 
+    /// @brief Cleans the input_all vector
+    /// @details v
     void clean() {
         input_all = {};
+    }
+
+    /// @brief Adds to channel
+    /// @details Adds a uint16_t to the receive_bytes_channel channel.
+    void add(uint16_t x){
+        receive_bytes_channel.write(x);
     }
 };
 

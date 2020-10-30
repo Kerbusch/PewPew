@@ -11,8 +11,13 @@
 # source files in this project (main.cpp is automatically assumed)
 SOURCES :=
 
+
 # header files in this project
-HEADERS :=
+HEADERS := ir.hpp
+HEADERS := struct.hpp
+HEADERS := speaker.hpp
+HEADERS := trigger.hpp
+HEADERS := run_game.hpp
 
 # other places to look for files for this project
 SEARCH  := 

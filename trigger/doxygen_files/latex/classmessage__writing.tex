@@ -1,0 +1,79 @@
+\hypertarget{classmessage__writing}{}\doxysection{message\+\_\+writing Class Reference}
+\label{classmessage__writing}\index{message\_writing@{message\_writing}}
+
+
+Inheritance diagram for message\+\_\+writing\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classmessage__writing_a6c23d91b9bf1d76c0897c09f248f24f6}{message\+\_\+writing}} (\mbox{\hyperlink{classir__send}{ir\+\_\+send}} \&ir\+\_\+\+Send\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor of the \mbox{\hyperlink{classmessage__writing}{message\+\_\+writing}} class. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmessage__writing_a32f5a56946643dccd5e9676e5418a280}\label{classmessage__writing_a32f5a56946643dccd5e9676e5418a280}} 
+void \mbox{\hyperlink{classmessage__writing_a32f5a56946643dccd5e9676e5418a280}{add\+\_\+tijd\+\_\+countdown}} (\mbox{\hyperlink{structtijd__countdown}{tijd\+\_\+countdown}} x)
+\begin{DoxyCompactList}\small\item\em add input to send\+\_\+tijd\+\_\+countdown\+\_\+channel channel. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmessage__writing_aac6a4a8893a987936801ea9612b0022b}\label{classmessage__writing_aac6a4a8893a987936801ea9612b0022b}} 
+void \mbox{\hyperlink{classmessage__writing_aac6a4a8893a987936801ea9612b0022b}{add\+\_\+shoot}} (\mbox{\hyperlink{structgun__data}{gun\+\_\+data}} x)
+\begin{DoxyCompactList}\small\item\em add input to send\+\_\+shoot\+\_\+channel channel. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmessage__writing_ae1b73026c4fd2c7431755743f96f0e33}\label{classmessage__writing_ae1b73026c4fd2c7431755743f96f0e33}} 
+enum {\bfseries state\+\_\+t} \{ {\bfseries idle}, 
+{\bfseries send\+Startgame}, 
+{\bfseries send\+Shot}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmessage__writing_ad7c4ae0189ae0aaa4d1429d1db8e80a8}\label{classmessage__writing_ad7c4ae0189ae0aaa4d1429d1db8e80a8}} 
+void {\bfseries main} ()
+\item 
+\mbox{\Hypertarget{classmessage__writing_a3d6e8f89dd4df78e8c597c1b80fae2b0}\label{classmessage__writing_a3d6e8f89dd4df78e8c597c1b80fae2b0}} 
+void {\bfseries send\+\_\+data} (uint8\+\_\+t n, uint8\+\_\+t data, bool repeat)
+\item 
+\mbox{\Hypertarget{classmessage__writing_afa0bbdc30bcc3c25e28a0384f711ceb4}\label{classmessage__writing_afa0bbdc30bcc3c25e28a0384f711ceb4}} 
+void {\bfseries send\+\_\+tijd\+\_\+countdown} (const uint8\+\_\+t \&n, const \mbox{\hyperlink{structtijd__countdown}{tijd\+\_\+countdown}} \&data)
+\item 
+\mbox{\Hypertarget{classmessage__writing_acd00cccaf878654c2a2dd354ca60dd98}\label{classmessage__writing_acd00cccaf878654c2a2dd354ca60dd98}} 
+void {\bfseries send\+\_\+shoot} (const int \&from\+\_\+player, const int \&power)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmessage__writing_a34a09fdd5e471ce627c44d6efd38be33}\label{classmessage__writing_a34a09fdd5e471ce627c44d6efd38be33}} 
+state\+\_\+t {\bfseries state} = idle
+\item 
+\mbox{\Hypertarget{classmessage__writing_a3f96e81ca8a68fe71f2599b60c6ad73d}\label{classmessage__writing_a3f96e81ca8a68fe71f2599b60c6ad73d}} 
+\mbox{\hyperlink{classir__send}{ir\+\_\+send}} \& {\bfseries ir\+\_\+\+Send}
+\item 
+\mbox{\Hypertarget{classmessage__writing_a982300de6d13cadb143091099570ccc4}\label{classmessage__writing_a982300de6d13cadb143091099570ccc4}} 
+rtos\+::channel$<$ \mbox{\hyperlink{structtijd__countdown}{tijd\+\_\+countdown}}, 1024 $>$ {\bfseries send\+\_\+tijd\+\_\+countdown\+\_\+channel}
+\item 
+\mbox{\Hypertarget{classmessage__writing_a2c2be599ade7a2b0f3b55f57b1c0408a}\label{classmessage__writing_a2c2be599ade7a2b0f3b55f57b1c0408a}} 
+rtos\+::channel$<$ \mbox{\hyperlink{structgun__data}{gun\+\_\+data}}, 1024 $>$ {\bfseries send\+\_\+shoot\+\_\+channel}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classmessage__writing_a6c23d91b9bf1d76c0897c09f248f24f6}\label{classmessage__writing_a6c23d91b9bf1d76c0897c09f248f24f6}} 
+\index{message\_writing@{message\_writing}!message\_writing@{message\_writing}}
+\index{message\_writing@{message\_writing}!message\_writing@{message\_writing}}
+\doxysubsubsection{\texorpdfstring{message\_writing()}{message\_writing()}}
+{\footnotesize\ttfamily message\+\_\+writing\+::message\+\_\+writing (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classir__send}{ir\+\_\+send}} \&}]{ir\+\_\+\+Send\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor of the \mbox{\hyperlink{classmessage__writing}{message\+\_\+writing}} class. 
+
+This constructor sets the pins and speaker\+Control as members. 
+\begin{DoxyParams}{Parameters}
+{\em ir\+\_\+\+Send\+\_\+} & This is a hwlib\+::pin\+\_\+out\& for the led of trigger. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ir.\+hpp\end{DoxyCompactItemize}
