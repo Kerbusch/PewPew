@@ -60,11 +60,8 @@ private:
         }
     }
 
-    ///@brief Function for assigning the sound of a beep
+    ///@brief Function for assigning the sound
     ///@details The function uses the input to create an audiosignal which is playable via the speaker.
-    ///@param f
-    ///@param d
-    ///@param fd
     void beep( int f, int d, int fd = 1000 ){
         auto end = hwlib::now_us() + d;
         while( end > hwlib::now_us() ){
@@ -81,10 +78,12 @@ private:
         }
     }
 
+    ///@brief Function for assigning the sound of peew sound
     void peew(){
         beep(20'000, 200'000, 990 );
     }
-
+    
+    ///@brief Function for assigning the sound of beep3 sound
     void beep3(){
         for( int i = 0; i < 3; i++ ){
             beep( 1'000, 50'000 );
@@ -100,11 +99,13 @@ public:
     {
         WDT->WDT_MR = WDT_MR_WDDIS;
     }
-
+    
+    ///@brief Function for setting the play shoot flag
     void enable_play_shoot_flag(){
         play_shoot_flag.set();
     }
-
+    
+    ///@brief Function for setting the play hit flag
     void enable_play_hit_flag(){
         play_hit_flag.set();
     }
