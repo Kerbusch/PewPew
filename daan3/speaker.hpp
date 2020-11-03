@@ -7,8 +7,8 @@
 /// @brief SpeakerControl class
 /// @details Class that provides the usage of a speaker with pre assigned sounds.
 class SpeakerControl: public rtos::task<> {
-    /// @brief Enum of the different states
 private:
+    /// @brief Enum of the different states
     enum state_t{
         Idle,
         Play_hit,

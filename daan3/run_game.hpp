@@ -22,7 +22,7 @@ public:
 
 class run_game : public rtos::task<>{
 private:
-    /*enum state_t {
+    enum state_t {
         idle,
         normale,
         deduct_Demage,
@@ -32,7 +32,7 @@ private:
         send_shoot,
         send_tijd
     };
-    state_t state = idle;*/
+    state_t state = idle;
 
     //reference menbers
     DisplayControl& displayControl;
@@ -45,13 +45,15 @@ private:
     game_parameters_struct gameParametersStruct;
 
     //last_hit
-    //hit last_hit = {31,0};
+    hit last_hit = {31,0};
 
     //rtos things
     rtos::flag start_run_game_flag = {this, "start_run_game_flag"};
     rtos::flag trigger_pressed_flag = {this, "trigger_pressed_flag"};
-    //rtos::channel<game_parameters_struct , 256> run_game_parameters_channel = {this, "run_game_parameters_channel"};
-    //rtos::channel<hit , 256> run_game_hit_channel = {this, "run_game_hit_channel"};
+    rtos::channel<game_parameters_struct , 64> run_game_parameters_channel = {this, "run_game_parameters_channel"};
+    rtos::channel<hit , 64> run_game_hit_channel = {this, "run_game_hit_channel"};
+    rtos::flag run_game_hit_flag = {this, "run_game_hit_flag"};
+
     long long int delay_1sec = rtos::ms * 1000;
     rtos::timer countdown_timer = {this, "countdown_timer"};
     rtos::timer manage_time_check_timer = {this, "manage_time_check_timer"};
@@ -60,10 +62,10 @@ private:
     /// @details State switcher for the different states
     void main(){
         while(true){
-            countdown_timer.set(rtos::ms * 100);
-            wait(countdown_timer);
+            /*countdown_timer.set(rtos::ms * 100);
+            wait(countdown_timer);*/
             hwlib::cout << "loop-run_game\n";
-            /*switch (state) {
+            switch (state) {
                 case idle: { //wacht op start flag, op exit: gameparameters invoegen
                     hwlib::cout << "idle-run_game\n";
                     //entry
@@ -75,18 +77,23 @@ private:
                 }case normale: {
                     hwlib::cout << "normale-run_game\n";
                     //entry
-                    displayControl.SetDisplayStats(gameParametersStruct);
+                    //displayControl.SetDisplayStats(gameParametersStruct);
+                    //displayControl.SetDisplayTime(manageTime.timer);
                     //transition
-                    manage_time_check_timer.set(delay_1sec);
-                    auto evt = wait(run_game_hit_channel + trigger_pressed_flag + manage_time_check_timer);
-                    if(evt == run_game_hit_channel){
-                        state = deduct_Demage;
-                    }else if(evt == trigger_pressed_flag){
-                        state = send_shoot;
-                    }else if(evt == manage_time_check_timer){
+                    manage_time_check_timer.set(rtos::ms * 100);
+                    auto evt = wait(manage_time_check_timer/* + run_game_hit_flag*/ + trigger_pressed_flag);
+                    if(evt == manage_time_check_timer){
                         if(manageTime.check_done()){
                             state = sending_message_display;
+                        }else{
+                            displayControl.SetDisplayTime(manageTime.timer);
                         }
+                    }/*else if(evt == run_game_hit_flag){
+                        hwlib::cout << "run_game_hit_flag-run_game\n";
+                        //state = deduct_Demage;
+                    }*/else if(evt == trigger_pressed_flag){
+                        hwlib::cout << "trigger_pressed_flag-run_game\n";
+                        state = send_shoot;
                     }
                     break;
                 }case deduct_Demage: {
@@ -125,6 +132,7 @@ private:
                         state = send_tijd;
                     }else{ //countdown_timer
                         if(gameParametersStruct.countdown <= 0){
+                            displayControl.SetDisplayMessageD1("");
                             manageTime.set_timer(gameParametersStruct.tijd); //start timer
                             manageTime.enable_start_manage_time_flag();
                             state = normale;
@@ -139,6 +147,7 @@ private:
                     hwlib::cout << "send_shoot-run_game\n";
                     //entry
                     messageWriting.add_shoot(gun_data{gameParametersStruct.number,gameParametersStruct.power,gameParametersStruct.health});
+                    messageWriting.enable_send_shoot_flag();
                     //transition
                     state = normale;
                     break;
@@ -146,17 +155,18 @@ private:
                     hwlib::cout << "send_tijd-run_game\n";
                     //entry
                     messageWriting.add_tijd_countdown(tijd_countdown{gameParametersStruct.tijd,gameParametersStruct.countdown});
+                    messageWriting.enable_send_tijd_countdown_flag();
                     //transition
                     state = countdown;
                     break;
                 }
-            }*/
+            }
         }
     }
 
 public:
     run_game(DisplayControl& displayControl_, SpeakerControl& speakerControl_, message_writing& messageWriting_, manage_time& manageTime_):
-            rtos::task<>(300, "SpeakerControl"),
+            task(400, "SpeakerControl"),
             displayControl(displayControl_),
             speakerControl(speakerControl_),
             messageWriting(messageWriting_),
@@ -164,8 +174,16 @@ public:
     {}
     //gun_data gun_data1 = {1,10,100};
 
-    /*void enable_start_run_game_flag(){
+    void enable_start_run_game_flag(){
         start_run_game_flag.set();
+    }
+
+    void enable_trigger_pressed_flag(){
+        trigger_pressed_flag.set();
+    }
+
+    void enable_run_game_hit_flag(){
+        run_game_hit_flag.set();
     }
 
     void add_game_parameters(const game_parameters_struct& x){
@@ -174,7 +192,7 @@ public:
 
     void add_hit(const hit& x){
         run_game_hit_channel.write(x);
-    }*/
+    }
 
     int get_player_number(){
         return gameParametersStruct.number;

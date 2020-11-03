@@ -34,9 +34,9 @@ private:
     /// @brief start_game_flag flag for starting the start_game class.
     rtos::flag start_game_flag = {this, "start_game_flag"};
     /// @brief start_game_channel channel for receiving the time and countdown from the ir receiver.
-    //rtos::channel<tijd_countdown , 1024> start_game_channel = {this, "start_game_channel"};
+    rtos::channel<tijd_countdown , 64> start_game_channel = {this, "start_game_channel"};
 
-    /// @brief Main funtion for the rtos::task<>.
+    /// @brief Main function for the rtos::task<>.
     /// @details State switcher for the different states
     void main(){
         while(true) {
@@ -66,8 +66,8 @@ private:
                     hwlib::cout << "start_game get_time\n";
                     //entry
                     //transtion
-                    //wait(start_game_channel);
-                    //gameParameters.set_tijd_countdown(start_game_channel.read());
+                    wait(start_game_channel);
+                    gameParameters.set_tijd_countdown(start_game_channel.read());
                     state = get_data;
                     break;
                 }
@@ -75,7 +75,8 @@ private:
                     hwlib::cout << "start_game get_data\n";
                     //entry
                     displayControl.SetDisplayMessageFadeD2("Settings received");
-                    //runGame.add_game_parameters(gameParameters.get_game_parameters());
+                    runGame.add_game_parameters(gameParameters.get_game_parameters());
+                    runGame.enable_start_run_game_flag();
                     //transtion
                     state = idle;
                     break;
@@ -91,20 +92,21 @@ public:
     /// @param runGame_ , a run_game class
     /// @param displayControl_ , a DisplayControl class
     start_game(game_parameters& gameParameters_, run_game& runGame_, DisplayControl& displayControl_):
+            task(700, "start_game" ),
             gameParameters(gameParameters_),
             runGame(runGame_),
             displayControl(displayControl_)
     {}
 
-    /// @brief enable funtion for the start_game_flag flag
+    /// @brief enable function for the start_game_flag flag
     void enable_start_game_flag(){
         start_game_flag.set();
     }
 
-    /// @brief add funtion for the start_game_channel channel
-    /*void add(tijd_countdown x){
+    /// @brief add function for the start_game_channel channel
+    void add(tijd_countdown x){
         start_game_channel.write(x);
-    }*/
+    }
 };
 
 #endif //START_GAME_HPP

@@ -15,44 +15,47 @@ const int HIT_DAMAGE2 = 3;
 class message_translation : public rtos::task<>{
 private:
     /// @brief enum state_t for the different states of the class
-    enum state_t{
+    /*enum state_t{
         idle,
         for_me,
         data_type,
         report_tijd_countdown,
         report_hit
-
     };
 
     /// @brief state of the class
-    state_t state = idle;
+    state_t state = idle;*/
 
     //members:
     /// @brief run_game
-    run_game& runGame;
+    //run_game& runGame;
     /// @brief startgame
-    start_game& startGame;
+    //start_game& startGame;
 
     /// @brief vector<uint16_t> of the input
-    std::vector<uint16_t> input_all = {};
+    //std::vector<uint16_t> input_all = {};
+    //uint16_t input_all[6];
 
     //rtos members:
     /// @brief rtos::channel with the received bytes
-    rtos::channel<uint16_t , 1024> receive_bytes_channel;
+    //rtos::channel<uint16_t , 32> receive_bytes_channel = {this, "receive_bytes_channel"};
+
+    rtos::timer timer_ggg = {this, "timer_ggg"};
 
     /// @brief main funtion for rtos
     /// @details state switch for the different states
     void main(){
         while (true){
-            switch (state) {
+            timer_ggg.set(rtos::ms * 100);
+            wait(timer_ggg);
+            hwlib::cout << "KUT RTOS\n";
+            /*switch (state) {
                 case idle: {
                     //entry
                     //transition
-                    auto evt = wait(receive_bytes_channel);
-                    if (evt == receive_bytes_channel) {
-                        extract_half_word_to_vector();
-                        state = for_me;
-                    }
+                    wait(receive_bytes_channel);
+                    extract_half_word_to_vector();
+                    state = for_me;
                     break;
                 }case for_me: {
                     //entry
@@ -95,12 +98,12 @@ private:
                     state = idle;
                     break;
                 }
-            }
+            }*/
         }
     }
 
 public:
-    // channel =    1-11111-00010-11101 > data = 2 dus 6 bytes
+    /*// channel =    1-11111-00010-11101 > data = 2 dus 6 bytes
     //              1-11111-00010-11101
     //              1-11111-10110-xor
     //              1-11111-10000-xor
@@ -112,8 +115,7 @@ public:
     /// @param startGame_ This is a start_game class.
     message_translation(run_game& runGame_, start_game& startGame_):
             runGame(runGame_),
-            startGame(startGame_),
-            receive_bytes_channel(this, "receive_bytes_channel")
+            startGame(startGame_)
     {}
 
     /// @brief Extracts the half word (16bits)
@@ -122,7 +124,13 @@ public:
     void extract_half_word_to_vector(){
         uint16_t x = receive_bytes_channel.read();
         //check complete;
-        input_all.push_back(x);
+        //input_all.push_back(x);
+        for(int i = 0; i < 6; i ++){
+            if(input_all[i] == 0){
+                input_all[i] = x;
+                return;
+            }
+        }
     }
 
     /// @brief Checks if the 16 bits are complete
@@ -169,13 +177,13 @@ public:
         }return false;
     }
 
-    /*int get_data_type(uint16_t input){
-        //get data first or 2nd half word for type
-        uint16_t mask = 0x3E0; // 00000011 11100000
-        input &= mask;
-        input = input >> 5;
-        return input;
-    }*/
+    //int get_data_type(uint16_t input){
+    //    //get data first or 2nd half word for type
+    //    uint16_t mask = 0x3E0; // 00000011 11100000
+    //    input &= mask;
+    //    input = input >> 5;
+    //    return input;
+    //}
 
     /// @brief Checks if 2 16bits are double
     bool check_double(const uint16_t& input1, const uint16_t& input2){
@@ -184,11 +192,12 @@ public:
 
     /// @brief x
     /// @details v
-    hit get_hit(){ // data type == 3
+    void get_hit(){ // data type == 3
         uint8_t f = extract_data(input_all[2]);
         uint8_t d = extract_data(input_all[3]);
         clean();
-        return hit{f,d};                            //Naar channel!!!! <-----------------------------------------------
+        runGame.add_hit(hit{f,d});                            //Naar channel!!!! <-----------------------------------------------
+        runGame.enable_run_game_hit_flag();
     }
 
     /// @brief x
@@ -202,20 +211,96 @@ public:
         c = c << 5;
         c |= extract_data(input_all[5]);
         clean();
-        //startGame.add(tijd_countdown{t,c});
+        startGame.add(tijd_countdown{t,c});
     }
 
     /// @brief Cleans the input_all vector
     /// @details v
     void clean() {
-        input_all = {};
+        for(int i = 0; i < 6; i ++){
+            input_all[i] = 0;
+        }
     }
 
     /// @brief Adds to channel
     /// @details Adds a uint16_t to the receive_bytes_channel channel.
     void add(uint16_t x){
         receive_bytes_channel.write(x);
+    }*/
+};
+
+class ir_receiver : public rtos::task<>{
+private:
+
+    enum state_t{
+        idle,
+        receive_bits
+    };
+
+    state_t state = idle;
+
+    hwlib::target::pin_in& signal;
+
+    rtos::timer receive_timer = {this, "receive_timer"};
+    long long int delay = 1200 * rtos::us;
+    rtos::timer receive_timer_1us = {this, "receive_timer_1us"};
+    long long int start_delay_1us = 1 * rtos::us;
+
+    message_translation& messageTranslation;
+
+    uint16_t message = 0x00;
+
+    void main(){
+        while(true){
+            switch(state){
+                case idle:{
+                    //entry
+                    signal.refresh();
+                    //transition
+                    if (signal.read() == 1){
+                        state = receive_bits;
+                    }
+                    receive_timer.set(delay);
+                    wait(receive_timer);
+                    break;
+                }
+                case receive_bits:{
+                    //entry
+                    ir_receive(message);
+                    //transition
+                    state = idle;
+                    break;
+                }
+            }
+        }
     }
+
+    void ir_receive(uint16_t& message){
+        signal.refresh();
+        if(signal.read() == 1) {
+            for (int i = 0; i < 16; ++i) {
+                receive_timer.set(delay);
+                wait(receive_timer);
+                signal.refresh();
+                if (signal.read() == 1) {
+                    message = message << 1;
+                    message |= 0x01;
+                } else{
+                    message = message << 1;
+                }
+                receive_timer.set(delay);
+                wait(receive_timer);
+            }
+            //messageTranslation.add(message);
+            message = 0x00;
+        }
+    }
+
+public:
+    ir_receiver(hwlib::target::pin_in& signal_, message_translation& messageTranslation_):
+            signal(signal_),
+            messageTranslation(messageTranslation_)
+    {}
 };
 
 #endif //IR_RECEIVE_HPP

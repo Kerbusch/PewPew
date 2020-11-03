@@ -91,12 +91,21 @@ int main( void ) {
     //start_game
     start_game startGame = {gameParameters, runGame, displayControl};
 
+    //ir receiver:
+    auto tsop_signal = hwlib::target::pin_in( hwlib::target::pins::d8 );
+
+    //message_translation messageTranslation = {runGame, startGame};
+    //message_translation messageTranslation = {};
+
+
+    //ir_receiver irReceiver = {tsop_signal, messageTranslation};
+
     //trigger gpio
     auto led_yellow = hwlib::target::pin_out( hwlib::target::pins::d4 );
     auto sw0 = hwlib::target::pin_in( hwlib::target::pins::d3 );
 
     //trigger control code
-    Trigger trigger1 = {led_yellow,sw0,speakerControl};
+    Trigger trigger1 = {led_yellow,sw0,speakerControl,runGame};
     
     //KEYPAD
     auto out0 = hwlib::target::pin_oc( hwlib::target::pins::a0 );
@@ -123,7 +132,7 @@ int main( void ) {
 
     //START CODE
     //
-    // runner r;
+    runner r;
 
     rtos::run();
 }

@@ -12,7 +12,7 @@ struct tijd_countdown{
     /// @brief Game time
     int tijd;
     /// @brief Countdown till start game
-    int countdown = 60;
+    int countdown = 10;
 };
 
 /// @brief gun_data struct

@@ -115,22 +115,26 @@ private:
     ir_send& ir_Send;
 
     rtos::channel<tijd_countdown , 1024> send_tijd_countdown_channel;
+    rtos::flag send_tijd_countdown_flag = {this, "send_tijd_countdown_flag"};
     rtos::channel<gun_data , 1024> send_shoot_channel;
+    rtos::flag send_shoot_flag = {this, "send_shoot_flag"};
 
     void main(){
         while (true){
             switch (state) {
                 case idle: {
+                    hwlib::cout << "idle-message_writing\n";
                     //entry
                     //transition
-                    auto evt = wait(send_tijd_countdown_channel + send_shoot_channel);
-                    if (evt == send_tijd_countdown_channel) {
+                    auto evt = wait(send_tijd_countdown_flag + send_shoot_flag);
+                    if (evt == send_tijd_countdown_flag) {
                         state = sendStartgame;
-                    } else if (evt == send_shoot_channel) {
+                    } else{
                         state = sendShot;
                     }
                     break;
                 }case sendStartgame: {
+                    hwlib::cout << "sendStartgame-message_writing\n";
                     //entry
                     auto channel_read = send_tijd_countdown_channel.read();
                     send_tijd_countdown(31, channel_read);
@@ -138,6 +142,7 @@ private:
                     state = idle;
                     break;
                 }case sendShot: {
+                    hwlib::cout << "sendShot-message_writing\n";
                     //entry
                     auto channel_read = send_shoot_channel.read();
                     send_shoot(channel_read.number, channel_read.power);
@@ -207,6 +212,14 @@ public:
     /// @brief add input to send_shoot_channel channel.
     void add_shoot(gun_data x){
         send_shoot_channel.write(x);
+    }
+
+    void enable_send_tijd_countdown_flag(){
+        send_tijd_countdown_flag.set();
+    }
+
+    void enable_send_shoot_flag(){
+        send_shoot_flag.set();
     }
 };
 
