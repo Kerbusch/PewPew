@@ -14,6 +14,7 @@
 #include "trigger.hpp"
 #include "init_game.hpp"
 #include "manage_time.hpp"
+#include "transfer.hpp"
 
 class runner : rtos::task<>{
 private:
@@ -79,14 +80,13 @@ int main( void ) {
     game_parameters gameParameters;
 
     //manage_time
-    manage_time manageTime;
+    manage_time manageTime = {};
 
-    //logHit
-    //Loghit loghit;
+    //transfer_hits
+    transfer_hits transferHits = {};
 
     //run_game
-    run_game runGame = {displayControl, speakerControl, m, manageTime};
-    //run_game runGame = {};
+    run_game runGame = {displayControl, speakerControl, m, manageTime,transferHits};
 
     //start_game
     start_game startGame = {gameParameters, runGame, displayControl};
@@ -94,11 +94,11 @@ int main( void ) {
     //ir receiver:
     auto tsop_signal = hwlib::target::pin_in( hwlib::target::pins::d8 );
 
-    //message_translation messageTranslation = {runGame, startGame};
-    //message_translation messageTranslation = {};
+    //message_translation
+    message_translation messageTranslation = {runGame, startGame};
 
 
-    //ir_receiver irReceiver = {tsop_signal, messageTranslation};
+    ir_receiver irReceiver = {tsop_signal, messageTranslation};
 
     //trigger gpio
     auto led_yellow = hwlib::target::pin_out( hwlib::target::pins::d4 );
@@ -132,7 +132,7 @@ int main( void ) {
 
     //START CODE
     //
-    runner r;
+    //runner r;
 
     rtos::run();
 }

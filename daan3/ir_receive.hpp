@@ -15,7 +15,7 @@ const int HIT_DAMAGE2 = 3;
 class message_translation : public rtos::task<>{
 private:
     /// @brief enum state_t for the different states of the class
-    /*enum state_t{
+    enum state_t{
         idle,
         for_me,
         data_type,
@@ -24,32 +24,27 @@ private:
     };
 
     /// @brief state of the class
-    state_t state = idle;*/
+    state_t state = idle;
 
     //members:
     /// @brief run_game
-    //run_game& runGame;
+    run_game& runGame;
     /// @brief startgame
-    //start_game& startGame;
+    start_game& startGame;
 
     /// @brief vector<uint16_t> of the input
     //std::vector<uint16_t> input_all = {};
-    //uint16_t input_all[6];
+    uint16_t input_all[6];
 
     //rtos members:
     /// @brief rtos::channel with the received bytes
-    //rtos::channel<uint16_t , 32> receive_bytes_channel = {this, "receive_bytes_channel"};
-
-    rtos::timer timer_ggg = {this, "timer_ggg"};
+    rtos::channel<uint16_t , 32> receive_bytes_channel = {this, "receive_bytes_channel"};
 
     /// @brief main funtion for rtos
     /// @details state switch for the different states
     void main(){
         while (true){
-            timer_ggg.set(rtos::ms * 100);
-            wait(timer_ggg);
-            hwlib::cout << "KUT RTOS\n";
-            /*switch (state) {
+            switch (state) {
                 case idle: {
                     //entry
                     //transition
@@ -98,12 +93,12 @@ private:
                     state = idle;
                     break;
                 }
-            }*/
+            }
         }
     }
 
 public:
-    /*// channel =    1-11111-00010-11101 > data = 2 dus 6 bytes
+    // channel =    1-11111-00010-11101 > data = 2 dus 6 bytes
     //              1-11111-00010-11101
     //              1-11111-10110-xor
     //              1-11111-10000-xor
@@ -226,7 +221,7 @@ public:
     /// @details Adds a uint16_t to the receive_bytes_channel channel.
     void add(uint16_t x){
         receive_bytes_channel.write(x);
-    }*/
+    }
 };
 
 class ir_receiver : public rtos::task<>{
@@ -291,7 +286,7 @@ private:
                 receive_timer.set(delay);
                 wait(receive_timer);
             }
-            //messageTranslation.add(message);
+            messageTranslation.add(message);
             message = 0x00;
         }
     }

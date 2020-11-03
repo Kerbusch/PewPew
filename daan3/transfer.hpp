@@ -33,14 +33,4 @@ public:
     }
 };
 
-int main(){
-    int playerNumber = 1;
-    transfer_hits transferHits = {};
-    transferHits.set_player_number(playerNumber);
-    transferHits.add_hit(hit{2,10});
-    transferHits.add_hit(hit{3,11});
-    transferHits.add_hit(hit{2,13});
-    transferHits.print();
-};
-
 #endif //PEWPEW_TRANSFER_HPP

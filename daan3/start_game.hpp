@@ -42,7 +42,6 @@ private:
         while(true) {
             switch (state) {
                 case idle: {
-                    hwlib::cout << "start_game idle\n";
                     //entry
                     //transtion
                     auto evt = wait(start_game_flag);
@@ -52,7 +51,6 @@ private:
                     break;
                 }
                 case check: {
-                    hwlib::cout << "start_game check\n";
                     //entry
                     //transtion
                     if (gameParameters.check_time_input()) {
@@ -63,7 +61,6 @@ private:
                     break;
                 }
                 case get_time: {
-                    hwlib::cout << "start_game get_time\n";
                     //entry
                     //transtion
                     wait(start_game_channel);
@@ -72,7 +69,6 @@ private:
                     break;
                 }
                 case get_data: {
-                    hwlib::cout << "start_game get_data\n";
                     //entry
                     displayControl.SetDisplayMessageFadeD2("Settings received");
                     runGame.add_game_parameters(gameParameters.get_game_parameters());

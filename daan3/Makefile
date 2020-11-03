@@ -13,7 +13,7 @@ SOURCES :=
 
 
 # header files in this project
-HEADERS := display.hpp gameparameters.hpp init_game.hpp ir_receive.hpp ir_send.hpp keypad.hpp run_game.hpp speaker.hpp start_game.hpp struct.hpp trigger.hpp
+HEADERS := display.hpp gameparameters.hpp init_game.hpp ir_receive.hpp ir_send.hpp keypad.hpp run_game.hpp speaker.hpp start_game.hpp struct.hpp trigger.hpp transfer.hpp
 
 # other places to look for files for this project
 SEARCH  := 

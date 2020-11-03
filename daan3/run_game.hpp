@@ -10,15 +10,7 @@
 #include "ir_receive.hpp"
 #include "ir_send.hpp"
 #include "manage_time.hpp"
-
-/*class Loghit{
-public:
-    std::vector<hit> hits = {};
-
-    void setHit(hit h){
-        hits.push_back(h);
-    }
-};*/
+#include "transfer.hpp"
 
 class run_game : public rtos::task<>{
 private:
@@ -39,7 +31,7 @@ private:
     SpeakerControl& speakerControl;
     message_writing& messageWriting;
     manage_time& manageTime;
-    //Loghit& loghit;
+    transfer_hits& transferHits;
 
     //game parameters
     game_parameters_struct gameParametersStruct;
@@ -62,9 +54,6 @@ private:
     /// @details State switcher for the different states
     void main(){
         while(true){
-            /*countdown_timer.set(rtos::ms * 100);
-            wait(countdown_timer);*/
-            hwlib::cout << "loop-run_game\n";
             switch (state) {
                 case idle: { //wacht op start flag, op exit: gameparameters invoegen
                     hwlib::cout << "idle-run_game\n";
@@ -88,10 +77,10 @@ private:
                         }else{
                             displayControl.SetDisplayTime(manageTime.timer);
                         }
-                    }/*else if(evt == run_game_hit_flag){
+                    }else if(evt == run_game_hit_flag) {
                         hwlib::cout << "run_game_hit_flag-run_game\n";
-                        //state = deduct_Demage;
-                    }*/else if(evt == trigger_pressed_flag){
+                        state = deduct_Demage;
+                    }else if(evt == trigger_pressed_flag){
                         hwlib::cout << "trigger_pressed_flag-run_game\n";
                         state = send_shoot;
                     }
@@ -111,17 +100,19 @@ private:
                     displayControl.SetDisplayMessageD2("Game over");
                     displayControl.SetDisplayMessageD3("");
                     //transition
+
                     state = idle;
                     break;
                 }case save_hit_info: {
                     hwlib::cout << "save_hit_info-run_game\n";
                     //entry
-                    //loghit.setHit(last_hit);
+                    transferHits.add_hit(last_hit);
                     //transition
-                    //if(gameParametersStruct.health <= 0){
-                    //    state = sending_message_display;
-                    //}
-                    //state = normale;
+                    if(gameParametersStruct.health <= 0){
+                        manageTime.enable_stop_manage_time_flag();
+                        state = sending_message_display;
+                    }
+                    state = normale;
                     break;
                 }case countdown: { //eerste state na idle. hierin zal run_game wachten op de countdown, display updaten en als het player 0 is met de trigger tijd_countdown schieten. aan het einde wordt state normale.
                     hwlib::cout << "countdown-run_game\n";
@@ -146,8 +137,10 @@ private:
                 }case send_shoot: {
                     hwlib::cout << "send_shoot-run_game\n";
                     //entry
-                    messageWriting.add_shoot(gun_data{gameParametersStruct.number,gameParametersStruct.power,gameParametersStruct.health});
-                    messageWriting.enable_send_shoot_flag();
+                    //messageWriting.add_shoot(gun_data{gameParametersStruct.number,gameParametersStruct.power,gameParametersStruct.health});
+                    //messageWriting.enable_send_shoot_flag();
+                    messageWriting.add_tijd_countdown(tijd_countdown{gameParametersStruct.tijd,gameParametersStruct.countdown});
+                    messageWriting.enable_send_tijd_countdown_flag();
                     //transition
                     state = normale;
                     break;
@@ -165,12 +158,13 @@ private:
     }
 
 public:
-    run_game(DisplayControl& displayControl_, SpeakerControl& speakerControl_, message_writing& messageWriting_, manage_time& manageTime_):
+    run_game(DisplayControl& displayControl_, SpeakerControl& speakerControl_, message_writing& messageWriting_, manage_time& manageTime_, transfer_hits& transferHits_):
             task(400, "SpeakerControl"),
             displayControl(displayControl_),
             speakerControl(speakerControl_),
             messageWriting(messageWriting_),
-            manageTime(manageTime_)
+            manageTime(manageTime_),
+            transferHits(transferHits_)
     {}
     //gun_data gun_data1 = {1,10,100};
 

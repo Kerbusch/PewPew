@@ -129,7 +129,7 @@ private:
                     auto evt = wait(send_tijd_countdown_flag + send_shoot_flag);
                     if (evt == send_tijd_countdown_flag) {
                         state = sendStartgame;
-                    } else{
+                    } else if(evt == send_shoot_flag){
                         state = sendShot;
                     }
                     break;
