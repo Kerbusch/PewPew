@@ -64,7 +64,9 @@ private:
                     //entry
                     //transtion
                     wait(start_game_channel);
-                    gameParameters.set_tijd_countdown(start_game_channel.read());
+                    tijd_countdown input = start_game_channel.read();
+                    hwlib::cout << input.tijd << "\n";
+                    gameParameters.set_tijd_countdown(input);
                     state = get_data;
                     break;
                 }

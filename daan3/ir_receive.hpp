@@ -17,6 +17,7 @@ private:
     /// @brief enum state_t for the different states of the class
     enum state_t{
         idle,
+        test,
         for_me,
         data_type,
         report_tijd_countdown,
@@ -36,6 +37,10 @@ private:
     //std::vector<uint16_t> input_all = {};
     uint16_t input_all[6];
 
+    uint16_t now;
+    uint16_t last;
+    
+
     //rtos members:
     /// @brief rtos::channel with the received bytes
     rtos::channel<uint16_t , 32> receive_bytes_channel = {this, "receive_bytes_channel"};
@@ -46,13 +51,33 @@ private:
         while (true){
             switch (state) {
                 case idle: {
+                    //hwlib::cout << "idle-message_translation\n";
                     //entry
                     //transition
                     wait(receive_bytes_channel);
-                    extract_half_word_to_vector();
-                    state = for_me;
+                    //extract_half_word_to_vector();
+                    now = receive_bytes_channel.read();
+
+                    state = test;
                     break;
-                }case for_me: {
+                }case test:{
+                    hwlib::cout << extract_for(now) << "\n";
+                    hwlib::cout << extract_data(now) << "\n";
+                    hwlib::cout << check_complete(now) << "\n";
+                    if(check_complete(now) && now > 32768 && now != last){
+                        hwlib::cout << now << "\n";
+                        if(extract_for(now) == 0){
+                            startGame.add(tijd_countdown{extract_data(now),10});
+                        }else{
+                            runGame.add_hit(hit{extract_for(now),extract_data(now)});
+                        }
+                    }
+                    last = now;
+                    state = idle;
+                }
+
+                case for_me: {
+                    //hwlib::cout << "for_me-message_translation\n";
                     //entry
                     bool check_t = check_for_me(input_all[0]);
                     //transition
@@ -64,6 +89,7 @@ private:
                     }
                     break;
                 }case data_type: {
+                    //hwlib::cout << "data_type-message_translation\n";
                     //entry
                     extract_half_word_to_vector();
                     int type_t = extract_data(input_all[0]);
@@ -81,12 +107,11 @@ private:
                     //transition
                     break;
                 }case report_tijd_countdown: {
-                    //entry
-                    input_tijd_countdown();
-                    //transition
+
                     state = idle;
                     break;
                 }case report_hit: {
+                    //hwlib::cout << "report_hit-message_translation\n";
                     //entry
                     get_hit();
                     //transition
@@ -238,8 +263,7 @@ private:
 
     rtos::timer receive_timer = {this, "receive_timer"};
     long long int delay = 1200 * rtos::us;
-    rtos::timer receive_timer_1us = {this, "receive_timer_1us"};
-    long long int start_delay_1us = 1 * rtos::us;
+    long long int start_delay = 50 * rtos::us;
 
     message_translation& messageTranslation;
 
@@ -249,17 +273,19 @@ private:
         while(true){
             switch(state){
                 case idle:{
+                    //hwlib::cout << "idle-ir_receive\n";
                     //entry
                     signal.refresh();
                     //transition
-                    if (signal.read() == 1){
+                    if (signal.read() == 0){
                         state = receive_bits;
                     }
-                    receive_timer.set(delay);
+                    receive_timer.set(start_delay);
                     wait(receive_timer);
                     break;
                 }
                 case receive_bits:{
+                    //hwlib::cout << "receive_bits-ir_receive\n";
                     //entry
                     ir_receive(message);
                     //transition
@@ -272,12 +298,12 @@ private:
 
     void ir_receive(uint16_t& message){
         signal.refresh();
-        if(signal.read() == 1) {
+        if(signal.read() == 0) {
             for (int i = 0; i < 16; ++i) {
                 receive_timer.set(delay);
                 wait(receive_timer);
                 signal.refresh();
-                if (signal.read() == 1) {
+                if (signal.read() == 0) {
                     message = message << 1;
                     message |= 0x01;
                 } else{

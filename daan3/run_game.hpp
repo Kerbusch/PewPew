@@ -56,20 +56,22 @@ private:
         while(true){
             switch (state) {
                 case idle: { //wacht op start flag, op exit: gameparameters invoegen
-                    hwlib::cout << "idle-run_game\n";
                     //entry
                     //transition
                     wait(start_run_game_flag);
                     gameParametersStruct = run_game_parameters_channel.read();
+                    messageWriting.set_player(gameParametersStruct.number);
                     state = countdown;
                     break;
                 }case normale: {
-                    hwlib::cout << "normale-run_game\n";
                     //entry
                     //displayControl.SetDisplayStats(gameParametersStruct);
                     //displayControl.SetDisplayTime(manageTime.timer);
                     //transition
-                    manage_time_check_timer.set(rtos::ms * 100);
+                    if(gameParametersStruct.number == 0){
+                        gameParametersStruct.number = 1;
+                    }
+                    manage_time_check_timer.set(rtos::ms * 1000);
                     auto evt = wait(manage_time_check_timer/* + run_game_hit_flag*/ + trigger_pressed_flag);
                     if(evt == manage_time_check_timer){
                         if(manageTime.check_done()){
@@ -86,7 +88,6 @@ private:
                     }
                     break;
                 }case deduct_Demage: {
-                    hwlib::cout << "deduct_Demage-run_game\n";
                     //entry
                     last_hit = run_game_hit_channel.read();
                     gameParametersStruct.health -= last_hit.damage;
@@ -94,7 +95,6 @@ private:
                     state = save_hit_info;
                     break;
                 }case sending_message_display: {
-                    hwlib::cout << "sending_message_display-run_game\n";
                     //entry
                     displayControl.SetDisplayMessageD1("");
                     displayControl.SetDisplayMessageD2("Game over");
@@ -104,7 +104,6 @@ private:
                     state = idle;
                     break;
                 }case save_hit_info: {
-                    hwlib::cout << "save_hit_info-run_game\n";
                     //entry
                     transferHits.add_hit(last_hit);
                     //transition
@@ -115,7 +114,6 @@ private:
                     state = normale;
                     break;
                 }case countdown: { //eerste state na idle. hierin zal run_game wachten op de countdown, display updaten en als het player 0 is met de trigger tijd_countdown schieten. aan het einde wordt state normale.
-                    hwlib::cout << "countdown-run_game\n";
                     //entry
                     countdown_timer.set(delay_1sec);
                     auto evt = wait(trigger_pressed_flag + countdown_timer);
@@ -135,7 +133,6 @@ private:
                     //transition
                     break;
                 }case send_shoot: {
-                    hwlib::cout << "send_shoot-run_game\n";
                     //entry
                     //messageWriting.add_shoot(gun_data{gameParametersStruct.number,gameParametersStruct.power,gameParametersStruct.health});
                     //messageWriting.enable_send_shoot_flag();
@@ -145,7 +142,6 @@ private:
                     state = normale;
                     break;
                 }case send_tijd:{
-                    hwlib::cout << "send_tijd-run_game\n";
                     //entry
                     messageWriting.add_tijd_countdown(tijd_countdown{gameParametersStruct.tijd,gameParametersStruct.countdown});
                     messageWriting.enable_send_tijd_countdown_flag();

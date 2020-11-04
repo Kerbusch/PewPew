@@ -27,7 +27,7 @@ private:
     start_game& startGame;
 
     gun_data gun = {0,10}; //default
-    tijd_countdown tijd_data = {600}; //default
+    tijd_countdown tijd_data = {12}; //default
 
     rtos::flag restart_init_game_flag = {this, "restart_init_game_flag"};
     long long int delay = {rtos::ms * 200};

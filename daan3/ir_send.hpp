@@ -114,6 +114,8 @@ private:
     state_t state = idle;
     ir_send& ir_Send;
 
+    int player = 31;
+
     rtos::channel<tijd_countdown , 1024> send_tijd_countdown_channel;
     rtos::flag send_tijd_countdown_flag = {this, "send_tijd_countdown_flag"};
     rtos::channel<gun_data , 1024> send_shoot_channel;
@@ -123,7 +125,7 @@ private:
         while (true){
             switch (state) {
                 case idle: {
-                    hwlib::cout << "idle-message_writing\n";
+                    //hwlib::cout << "idle-message_writing\n";
                     //entry
                     //transition
                     auto evt = wait(send_tijd_countdown_flag + send_shoot_flag);
@@ -134,40 +136,23 @@ private:
                     }
                     break;
                 }case sendStartgame: {
-                    hwlib::cout << "sendStartgame-message_writing\n";
+                    //hwlib::cout << "sendStartgame-message_writing\n";
                     //entry
-                    auto channel_read = send_tijd_countdown_channel.read();
-                    send_tijd_countdown(31, channel_read);
+                    tijd_countdown channel_read = send_tijd_countdown_channel.read();
+                    send_data(player,channel_read.tijd,true);
                     //transition
                     state = idle;
                     break;
                 }case sendShot: {
-                    hwlib::cout << "sendShot-message_writing\n";
+                    //hwlib::cout << "sendShot-message_writing\n";
                     //entry
                     auto channel_read = send_shoot_channel.read();
-                    send_shoot(channel_read.number, channel_read.power);
+                    send_data(player,channel_read.power,true);
                     //transition
                     state = idle;
                     break;
                 }
             }
-        }
-    }
-
-    void send_data(uint8_t n, uint8_t data, bool repeat){
-        uint16_t d = 1;
-        d = d << 5;
-        d |= n;
-        d = d << 5;
-        d |= data;
-        for(int i = 4; i >= 0; i--){
-            d = d << 1;
-            d |= (((n & (1 << i)) >> i) ^ ((data & (1 << i)) >> i)); //xor
-        }
-        ir_Send.add(d);
-        if(repeat){
-            hwlib::wait_ms(30);
-            ir_Send.add(d);
         }
     }
 
@@ -204,6 +189,23 @@ public:
             send_shoot_channel(this, "send_shoot_channel")
     {}
 
+    void send_data(uint8_t n, uint8_t data, bool repeat){
+        uint16_t d = 1;
+        d = d << 5;
+        d |= n;
+        d = d << 5;
+        d |= data;
+        for(int i = 4; i >= 0; i--){
+            d = d << 1;
+            d |= (((n & (1 << i)) >> i) ^ ((data & (1 << i)) >> i)); //xor
+        }
+        ir_Send.add(d);
+        if(repeat){
+            hwlib::wait_ms(30);
+            ir_Send.add(d);
+        }
+    }
+
     /// @brief add input to send_tijd_countdown_channel channel.
     void add_tijd_countdown(tijd_countdown x){
         send_tijd_countdown_channel.write(x);
@@ -220,6 +222,11 @@ public:
 
     void enable_send_shoot_flag(){
         send_shoot_flag.set();
+    }
+
+    void set_player(const int& i){
+        player = i;
+        hwlib::cout << "player: " << player << "\n";
     }
 };
 

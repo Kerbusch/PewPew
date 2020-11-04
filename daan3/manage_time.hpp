@@ -24,7 +24,7 @@ private:
     /// @brief stop_manage_time_flag flag for stopping the manage_time class.
     rtos::flag stop_manage_time_flag = {this, "stop_manage_time_flag"};
     /// @brief delay member of 1000 ms (1 second).
-    long long int delay = 1000 * rtos::ms;
+    long long int delay = 60000 * rtos::ms;
     /// @brief manage_time_timer timer for counting
     rtos::timer manage_time_timer = {this, "manage_time_timer"};
 
@@ -34,7 +34,7 @@ private:
         while(true) {
             switch (state) {
                 case idle: {
-                    hwlib::cout << "idle-manage_time\n";
+                    //hwlib::cout << "idle-manage_time\n";
                     //entry
                     //transistion
                     wait(start_manage_time_flag);
@@ -42,7 +42,7 @@ private:
                     break;
                 }
                 case counting: {
-                    hwlib::cout << timer << "-manage_time\n";
+                    //hwlib::cout << timer << "-manage_time\n";
                     //entry
                     manage_time_timer.set(delay);
                     auto evt = wait(manage_time_timer + stop_manage_time_flag);

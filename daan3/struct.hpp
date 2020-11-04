@@ -42,7 +42,7 @@ struct game_parameters_struct{
     /// @brief Game time
     int tijd;
     /// @brief Countdown till start game
-    int countdown = 60;
+    int countdown = 10;
     /// @brief Player number
     int number;
     /// @brief Gun power / damage
